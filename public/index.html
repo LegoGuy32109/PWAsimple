@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- Must add manifest to every page that is using it -->
+    <link rel="manifest" href="/manifest.json">
+    <!-- Safari specific for iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Josh's PWA">
+    <link rel="apple-touch-icon" href="144x144.png" sizes="144x144">
+    <!-- Internet Explorer -->
+    <meta name="msapplication-TileImage" content="144x144.png">
+    <meta name="msapplication-TileColor" content="#eee">
+    <meta name="theme-color" content="#3f51b5">
+
+</head>
+
+<body>
+    <h1>Hi</h1>
+    <button id="save">Save Ship to Cache</button>
+    <img style="width: 90vw" src="/ship-1024x512.png" />
+
+    <p><a href="/help.html">Help</a></p>
+    <br/>
+    <p><a href="/db.html">To Database</a></p>
+
+    <script defer src="app.js"></script>
+</body>
+
+</html>

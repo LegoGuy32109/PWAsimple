@@ -1,0 +1,20 @@
+{
+	"name": "Josh's Progressive Web App",
+	"short_name": "Josh's PWA",
+	"start_url": "/index.html",
+	"scope": ".",
+	"display": "fullscreen",
+	"background_color": "#eee",
+	"theme_color": "#3F51B5",
+	"description": "A cool little app to do some stuff!",
+	"dir": "ltr",
+	"lang": "en-US",
+	"orientation": "portrait-primary",
+	"icons": [
+        {
+            "src": "144x144.png",
+            "type": "image/png",
+            "sizes": "144x144"
+        }
+    ]
+}
