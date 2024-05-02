@@ -1,0 +1,39 @@
+<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'>
+
+    <xs:element name="employee" type="personinfo" />
+    <xs:element name="student" type="personinfo" />
+    <xs:element name="member" type="fullpersoninfo" />
+
+    <xs:complexType name="personinfo">
+        <xs:sequence>
+            <xs:element name="firstname" type="xs:string" />
+            <xs:element name="lastname" type="xs:string" />
+            <xs:element name="interest" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+        <xs:anyAttribute/>
+    </xs:complexType>
+
+    <xs:complexType name="fullpersoninfo">
+        <xs:complexContent>
+            <xs:extension base="personinfo">
+                <xs:sequence>
+                    <xs:element name="address" type="xs:string" />
+                    <xs:element name="city" type="xs:string" />
+                    <xs:element name="country" type="xs:string" />
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:attribute name="color"></xs:attribute>
+
+    <xs:element name="people">
+    </xs:element>
+
+    <xs:element name="product">
+        <xs:complexType>
+            <xs:attribute name="something" type="xs:positiveInteger" />
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

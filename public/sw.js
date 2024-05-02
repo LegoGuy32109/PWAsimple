@@ -1,4 +1,4 @@
-const CACHE_VERSION = 11;
+const CACHE_VERSION = 12;
 const STATIC_CACHE = `static-v${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `dynamic-v${CACHE_VERSION}`;
 self.addEventListener('install', function (event)

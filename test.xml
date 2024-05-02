@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<people xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='test.xsd'>
+    <student color="red">
+        <firstname>Josh</firstname>
+        <lastname>Hale</lastname>
+        <interest>Poopin</interest>
+        <interest>Poopin again</interest>
+    </student>
+    <member>
+        <firstname>Josh</firstname>
+        <lastname>Hale</lastname>
+        <address>Heyll aosidjflaksdj</address>
+        <city>FIshers</city>
+        <country>🔴</country>
+    </member>
+</people>

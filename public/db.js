@@ -4,37 +4,42 @@ const customerData = [
     { ssn: "555-55-5555", name: "Donna", age: 32, email: "donna@home.org" },
 ];
 
-let db;
+/**
+ * Get db object
+ */
+function getDb()
+{
+    console.log("Connecting to DB");
+    const request = window.indexedDB.open('TestDB', 1);
+    request.onerror = (err) =>
+    {
+        console.error(err);
+    };
+    request.onsuccess = (event) =>
+    {
+        db = event.target.result;
+        console.log("Db opened ✅", event);
+    };
+    request.onupgradeneeded = (event) =>
+    {
+        console.log("Upgrading DB", event);
+        const db = event.target.result;
+        const newStore = db.createObjectStore("customers", { autoIncrement: true });
+        // not running for some reason
+        // newStore.onsuccess = async (event) =>
+        // {
+        //     console.log("Customers store created", event);
+        //     console.log("Creating customers 🧑👩");
+        //     for (const customer of customerData)
+        //     {
+        //         console.log("🧑 Adding ", customer);
+        //         await newStore.add(customer);
+        //     }
+        // };
+    };
+}
 
 // try to connect db of certain version, creates one if doesn't exist
-console.log("Connecting to DB");
-const request = window.indexedDB.open('TestDB', 1);
-request.onerror = (err) =>
-{
-    console.error(err);
-};
-request.onsuccess = (event) =>
-{
-    db = event.target.result;
-    console.log("Db opened ✅", event);
-};
-request.onupgradeneeded = (event) =>
-{
-    console.log("Upgrading DB", event);
-    const db = event.target.result;
-    const newStore = db.createObjectStore("customers", { autoIncrement: true });
-    // not running for some reason
-    // newStore.onsuccess = async (event) =>
-    // {
-    //     console.log("Customers store created", event);
-    //     console.log("Creating customers 🧑👩");
-    //     for (const customer of customerData)
-    //     {
-    //         console.log("🧑 Adding ", customer);
-    //         await newStore.add(customer);
-    //     }
-    // };
-};
 
 /**
  * Reset db
@@ -69,6 +74,10 @@ document.querySelector("#reset").addEventListener('click', resetDb);
  */
 function getCustomers()
 {
+    if (!db)
+    {
+        return;
+    }
     console.log("Requesting Customers...");
     const transaction = db.transaction("customers"); // read-only by default
     transaction.onerror = (err) =>
