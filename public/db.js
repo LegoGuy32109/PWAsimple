@@ -1,7 +1,8 @@
+const GENDER = { MALE: 0, FEMALE: 1 };
 const startData = [
-	{ ssn: "444-44-4444", name: "Bill", age: 35, email: "bill@company.com" },
-	{ ssn: "555-55-5555", name: "Donna", age: 32, email: "donna@home.org" },
-	{ ssn: "666-66-6666", name: "William", age: 42, email: "william@swag.edu" },
+	{ ssn: "444-44-4444", gender: GENDER.MALE, name: "Bill", age: 35, email: "bill@company.com" },
+	{ ssn: "555-55-5555", gender: GENDER.FEMALE, name: "Donna", age: 32, email: "donna@home.org" },
+	{ ssn: "666-66-6666", gender: GENDER.MALE, name: "William", age: 42, email: "william@swag.edu" },
 ];
 
 const appDatabase = {
@@ -57,8 +58,23 @@ const appDatabase = {
 			const transaction = appDatabase.db.transaction("customers"); // read-only by default
 			transaction.onerror = (err) => reject("Transaction error ❌", err);
 			const getRequest = transaction.objectStore("customers").getAll();
+			const getKeysRequest = transaction.objectStore("customers").getAllKeys();
 			getRequest.onerror = (err) => reject("getAll() error ❌", err);
-			getRequest.onsuccess = (event) => resolve(event.target.result);
+			getKeysRequest.onerror = (err) => reject("getAllKeys() error ❌", err);
+			// Don't need to handle errors in Promise.all, onerror already rejected above
+			const requestsToComplete = [
+				new Promise((resolve, _reject) => {
+					getRequest.addEventListener("success", resolve);
+				}),
+				new Promise((resolve, _reject) => {
+					getKeysRequest.addEventListener("success", resolve);
+				}),
+			];
+			Promise.all(requestsToComplete).then(([getRes, getKeysRes]) => {
+				const customers = getRes.target.result;
+				const keys = getKeysRes.target.result;
+				resolve(customers.map((customer, index) => ({ key: keys[index], ...customer })));
+			});
 		});
 	},
 
@@ -66,6 +82,7 @@ const appDatabase = {
 	 * Add customer object to database
 	 *
 	 * @param {any} customer
+	 * @returns {Promise} Promise to add `customer` to database in `customers` table
 	 */
 	addCustomer(customer) {
 		return new Promise((resolve, reject) => {
@@ -84,9 +101,33 @@ const appDatabase = {
 			};
 		});
 	},
+
+	/**
+	 * Delete customer item by key
+	 *
+	 * @param {number} key auto-indexed key of item to delete
+	 * @returns {Promise} Promise to delete key in `customers` table
+	 */
+	deleteCustomer(key) {
+		return new Promise((resolve, reject) => {
+			if (typeof key !== "number") reject("Key is not number");
+			const delTransaction = appDatabase.db.transaction("customers", "readwrite");
+			delTransaction.onerror = (err) => {
+				reject("Transaction error ❌", err);
+			};
+
+			const delRequest = delTransaction.objectStore("customers").delete(key);
+			delRequest.onerror = (err) => {
+				reject("delete() error ❌", err);
+			};
+			delRequest.onsuccess = (_event) => {
+				resolve(`Customer deleted from database 🗑️`);
+			};
+		});
+	},
 };
 
-// try to connect db of certain version, creates one if doesn't exist
+// try to connect db of certain version, creates one if it didn't exist
 appDatabase.connectDb().then(refresh);
 
 // reset db button
@@ -97,7 +138,7 @@ document.querySelector("#reset").addEventListener("click", async () => {
 
 // add customer to page
 document.querySelector("#add").addEventListener("click", async () => {
-	await appDatabase.addCustomer(startData[Math.floor(Math.random()*startData.length)]);
+	await appDatabase.addCustomer(startData[Math.floor(Math.random() * startData.length)]);
 	refresh();
 });
 
@@ -106,32 +147,46 @@ document.querySelector("#add").addEventListener("click", async () => {
  */
 async function refresh() {
 	const customerTable = document.querySelector("#customerTable");
+	customerTable.innerHTML = "";
 	const customers = await appDatabase.getCustomers();
-	if (customers.length > 0)
-		customerTable.innerHTML = `<table>
-      <thead>
-          <tr>
-              <th>ssn</th>
-              <th>name</th>
-              <th>age</th>
-              <th>email</th>
-          </tr>
-      </thead>
-      <tbody>
-          ${customers
-					.map(
-						(customer) => `
+	if (customers.length === 0) {
+		customerTable.innerHTML = `No customers so far`;
+		return;
+	}
+	const tableHeader = document.createElement("thead");
+	tableHeader.innerHTML = `
+		<tr>
+			<th>ssn</th>
+			<th>name</th>
+			<th>age</th>
+			<th>email</th>
+			<th>Delete?</th>
+		</tr>`;
+	const tableBody = document.createElement("tbody");
+	tableBody.innerHTML = customers
+		.map(
+			(customer) => `
           <tr>
               <th>${customer.ssn}</th>
-              <th>${customer.name}</th>
+              <th>${customer.name} ${customer.gender === GENDER.MALE ? "♂️" : "♀️"}
               <th>${customer.age}</th>
               <th>${customer.email}</th>
-          </tr>
-          `
-					)
-					.join("")}
-      </tbody>
-  </table>`;
-	else customerTable.innerHTML = `No customers so far`;
+			  <th><button id="delete-customer-${customer.key}">🗑️</button></th>
+          </tr>`
+		)
+		.join("");
+	customerTable.appendChild(tableHeader);
+	customerTable.appendChild(tableBody);
+	// user won't be clicking that fast, so show the elements before attaching event listeners
+	const deleteButtons = tableBody.querySelectorAll("button");
+	deleteButtons.forEach((button) => {
+		button.addEventListener("click", async () => {
+			const userAnswer = confirm(`Are you sure you want to delete?`);
+			if (userAnswer) {
+				const result = await appDatabase.deleteCustomer(Number(button.id.split("-").at(-1)));
+				console.log(result);
+				refresh();
+			}
+		});
+	});
 }
-document.querySelector("#get").addEventListener("click", refresh);
