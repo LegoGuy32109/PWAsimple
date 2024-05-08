@@ -1,6 +1,7 @@
-const CACHE_VERSION = 12;
+const CACHE_VERSION = 4;
 const STATIC_CACHE = `static-v${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `dynamic-v${CACHE_VERSION}`;
+
 self.addEventListener('install', function (event)
 {
     console.log('🤖 Installing Service worker...', event);
@@ -15,8 +16,8 @@ self.addEventListener('install', function (event)
             '/144x144.png',
             '/ship-1024x512.png',
             '/manifest.json',
-            '/db.html',
-            '/db.js'
+            '/database/db.html',
+            '/database/db.js'
         ]);
     }));
 });
@@ -125,3 +126,21 @@ self.addEventListener('fetch', function (event)
 //         fetch(event.request)
 //     );
 // });
+
+self.addEventListener('notificationclick', (event) =>
+{
+    const notification = event.notification;
+    const action = event.action;
+
+    if (action === 'kill')
+    {
+        notification.close();
+    }
+    console.log(event);
+});
+
+// User didn't interact
+self.addEventListener('notificationclose', (event) =>
+{
+    console.log("Notification closed 😡", event);
+});

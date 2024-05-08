@@ -1,8 +1,10 @@
 {
   "scripts": {
-    "start": "http-server -c-1"
+    "start": "http-server -c-1",
+    "web-push": "web-push"
   },
   "dependencies": {
-    "http-server": "^14.1.1"
+    "http-server": "^14.1.1",
+    "web-push": "^3.6.7"
   }
 }
