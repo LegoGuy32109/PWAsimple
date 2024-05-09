@@ -132,7 +132,7 @@ self.addEventListener('notificationclick', (event) =>
     const notification = event.notification;
     const action = event.action;
     const baseUrl = `http://localhost:8080`;
-    const targetUrl = `${baseUrl}${action}`;
+    const targetUrl = `${baseUrl}${action.startsWith('/') ? action : ''}`;
 
     notification.close();
     // This navigation stuff is awesome! Opens the webapp if it hadn't already!?
