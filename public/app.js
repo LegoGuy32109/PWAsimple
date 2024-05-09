@@ -66,25 +66,24 @@ pingButton.addEventListener("click", () =>
         image: '/ship-1024x512.png', // I love the image that's very cool
         lang: 'en-US',
         // vibrate: [100, 50, 200], // not every browser supports this
-        badge: '/144x144.png', // only for android
+        // badge: '/144x144.png', // only for android
         tag: 'confirm-notification', // used for grouping notificaitons not spamming user
         renotify: true, // change tag default behavior to renotify
         // oh nice now I can spam myself clicking the button with tag and renotify
         actions: [
-            { action: 'kill', title: '🔪' },
-            // { action: 'cancel', title: 'Cancel', icon: '/144x144.png' },
-            // { action: 'confirm', title: 'Okay', icon: '/ship-1024x512.png' },
+            { action: '/database/db.html', title: 'Database'},
+            { action: '/', title: 'Home', icon: '/144x144.png' },
         ],
         requireInteraction: true,
         silent: true, // can't have vibrate
+        // data: {
+        //     url: `/database/db.html`
+        // }
     };
-    if (navigator.serviceWorker)
-    {
-        navigator.serviceWorker.ready
-            .then((swregistration) =>
-                swregistration.showNotification(`I'm in a service worker`, notifOptions)
-            );
-    }
+    navigator.serviceWorker?.ready
+        .then((swregistration) =>
+            swregistration.showNotification(`I'm in a service worker`, notifOptions)
+        );
 });
 
 
@@ -102,7 +101,7 @@ enablePushButton.addEventListener("click", () =>
         })
         .then(([swreg, sub]) =>
         {
-            console.log(swreg, sub)
+            console.log(swreg, sub);
             // we have a subscription
             if (sub)
             {
@@ -122,8 +121,8 @@ enablePushButton.addEventListener("click", () =>
         {
             // fetch('POST subscription to server')
             console.log(JSON.stringify(sub));
-            new Notification("🔔 Subscribed to push notifications!")
-        })
+            new Notification("🔔 Subscribed to push notifications!");
+        });
 });
 
 function urlBase64ToUint8Array(base64String)
